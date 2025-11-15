@@ -22,23 +22,38 @@
 ;a negative value if s1 is less than s2;
 ;a positive value if s1 is greater than s2.
 
-se
+; | s1 | s2 | 케이스 코드 | 의미                       | 결과         |
+; | ---| ---| ---       | ---                       | ---         |
+; | 0  | 0  | 00        | 둘 다 끝                   | equal(0)     |
+; | 0  | 1  | 01        | s1 먼저 종료                | s1 < s2     |
+; | 1  | ?  | 11        | s1이 문자 → s2 상태 따라 처리 | 반복 or diff |
+
 
 section .text
   global ft_strcmp
 
 ft_strcmp:
-  xor rax, rax
-  xor rcx, rcx
-  xor r8, r8
+.loop:
+  mov al, [rdi]
+  mov dl, [rsi]
+  cmp al, dl ; left - right  case pos neg 0
+  jne .diff
 
+  test al, al
+  je .equal
+  inc rdi
+  inc rsi
   jmp .loop
 
-.loop:
-  mov r8, byte [rdi + rcx]
-  cmp r8, r8
 
-  cmp 
-
-.done
+.diff:
+  movzx eax, al
+  movzx edx, dl
+  sub eax, edx
   ret
+
+.equal:
+  xor rax, rax
+  ret
+
+

@@ -42,6 +42,20 @@ int main(void){
     free(dest);
     free(src);
   }
+
+  {
+    char *arr[10] = {"ABC", "ABC", "AB", "ABC", "ABC", "AB"}; 
+    printf("strcmp test\n");
+    for (int i = 0; i < 5; i++) {
+      int i2 = i + 1;
+      printf("CASE %d %s %s diff result is %d\n", (i + 1), arr[i], arr[i2], strcmp(arr[i], arr[i2]));
+    }
+    printf("ft_strcmp test\n");
+    for (int i = 0; i < 5; i++) {
+      int i2 = i + 1;
+      printf("CASE %d %s %s diff result is %d\n", (i + 1), arr[i], arr[i2], ft_strcmp(arr[i], arr[i2]));
+    }
+  }
   
   return (0);
 }
