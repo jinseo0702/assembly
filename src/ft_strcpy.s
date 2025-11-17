@@ -56,6 +56,5 @@ ft_strcpy:
   jmp .loop
 
 .done:
-  inc rcx
   mov byte [rdi + rcx], 0
   ret

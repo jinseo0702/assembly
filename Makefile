@@ -14,7 +14,10 @@ DEBUG_TEST = libasm_debug_test
 HEADER = include/libasm.h
 ASM_SRC = src/ft_strlen.s \
 src/ft_strcpy.s \
-src/ft_strcmp.s
+src/ft_strcmp.s \
+src/ft_write.s \
+src/ft_read.s \
+src/ft_strdup.s
 ASM_OBJS = $(ASM_SRC:.s=.o)
 ASM_OBJS_DEBUG = $(ASM_SRC:.s=.debug.o)
 C_SRC = test/test.c
