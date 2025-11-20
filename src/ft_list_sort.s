@@ -10,17 +10,66 @@
 ;     while (cur && cur->next) {
 ;         next = cur->next;
 ;         if (cmp(cur->data, next->data) > 0) {
-;             // swap(cur, next)
-;             swapped = 1;
+;           swap(cur, swap)
 ;         } else {
 ;             prev = cur;
 ;             cur = cur->next;
 ;         }
 ;     }
 ; } while (swapped);
+;****************************************************************************
+;void swap(int sawp, t_list *prev, t_list *cur, t_list *next, t_list **head){
+;  swap = 1;
+;  if (prev == NULL){
+;    *head = next;
+;  }
+;  else{
+;    prev->next = next;
+;  }
+;  cur->next = next->next;
+;  next->next = cur;
+;  prev = next;
+;}
+;****************************************************************************
+;****************************************************************************
+;void swap(){
+;  //분기가 처음인경우
+;  next = cur->next;
+;  if (prev == NULL){
+;    head = next;
+;  }
+;  else{
+;    prev->next = next;
+;  }
+;  cur->next = next->next;
+;  next->next = cur;
+;  prev = next;
+;}
+;****************************************************************************
 
 extern ft_list_size
 %define PTRSIZE 8
+
+%macro LOAD_NODE 2
+  mov %1, [%2]
+%endmacro
+
+%macro LOAD_NODE_RESERVED 2
+  mov [%1], %2
+%endmacro
+
+
+%macro LOAD_DATA_PAIR 2
+  xor rdi, rdi
+  xor rsi, rsi
+  mov rdi, [%1]
+  mov rdi, [rdi]
+  mov rsi, [%2]
+  mov rsi, [rsi]
+  mov rax, r13
+  call rax
+%endmacro
+
 section .bss
   prev resq 1; 16 byte reserved
   cur resq 1; 16 byte reserved
@@ -33,74 +82,74 @@ section .text
   global ft_list_sort
 
 ft_list_sort:
+  push r12
+  push r13
+  push rbx
+  push r14
+  xor r14, r14
   xor r8, r8
   mov r8, rdi
   mov rdi, [r8]
   call ft_list_size
   mov DWORD [rel cnt], eax ; 예외 처리 안함
-  push r12
-  push r13
   mov r12, r8; insert head address
   mov r13, rsi; insert function pointer address
   ;prev == NULL
 
 .out_loop:
+  inc r14
   mov DWORD [rel swapped], 0
   mov qword [rel prev], 0
-  mov rax, [r12]
-  mov [rel cur], rax
-  jmp .inner_loop
+  LOAD_NODE rax, r12
+  LOAD_NODE_RESERVED rel cur, rax
 
 .inner_loop:
-  cmp qword [rel cur], 0
+  LOAD_NODE rbx, rel cur ;if(cur) check : rbx = cur
+  test rbx, rbx
   jz .after_inner
-  cmp qword [rel cur + PTRSIZE], 0
+  LOAD_NODE rax, rbx + PTRSIZE ; rax = cur->next
+  test rax, rax ;if(cur->next) check
   jz .after_inner
-  mov rax, [rel cur + PTRSIZE]
-  mov [rel next], rax
-  mov rdi, [rel cur]
-  mov rsi, [rel next]
-  mov rax, r13
-  call rax
-  cmp rax, 0
-  jg .swap
+  LOAD_NODE_RESERVED rel next, rax ; next = rax(cur->next)
+  LOAD_DATA_PAIR rel cur, rel next
+  cmp eax, 0
+  jg .swap_condition
+
+.no_swap:
+    LOAD_NODE_RESERVED rel prev, rbx ; prev = cur;
+    LOAD_NODE rax, rel next
+    LOAD_NODE_RESERVED rel cur, rax
+    jmp .inner_loop
 
 .after_inner:
-  cmp DWORD [rel swapped], 1
-  jl .done
+  cmp DWORD [rel swapped], 0
+  je .done
   jmp .out_loop
 
-.swap:
+.swap_condition:
+  LOAD_NODE rbx, rel cur
+  LOAD_NODE rcx, rel next
+  mov DWORD [rel swapped], 1
   cmp qword [rel prev], 0
   je .swap_head
-  mov rax, [rel next + PTRSIZE]
-  mov [rel cur + PTRSIZE], rax
-  mov rax, [rel next]
-  mov [rel prev + PTRSIZE], rax
-  mov rax, [rel cur]
-  mov [rel next + PTRSIZE], rax
-  mov DWORD [rel swapped], 1
-  mov rax, [rel next]
-  mov [rel prev], rax
-  mov rax, [rel next + PTRSIZE]
-  mov [rel cur], rax
-  jmp .after_inner
+  LOAD_NODE rax, rel prev ; rax = prev
+  LOAD_NODE_RESERVED rax + PTRSIZE, rcx ;prev->next = next
+  jmp .swap_list
 
 .swap_head:
-  mov rax, [rel next]
-  mov [r12], rax
-  mov rax, [rel next + PTRSIZE]
-  mov [rel cur + PTRSIZE], rax
-  mov rax, [rel cur]
-  mov [rel next + PTRSIZE], rax
-  mov DWORD [rel swapped], 1
-  mov rax, [rel next]
-  mov [rel prev], rax
-  mov rax, [rel next + PTRSIZE]
-  mov [rel cur], rax
-  jmp .after_inner
+  LOAD_NODE_RESERVED r12, rcx ; *head = next 
+  jmp .swap_list
+
+.swap_list:
+  LOAD_NODE rax, rcx + PTRSIZE ; rax -> next->next
+  LOAD_NODE_RESERVED rbx + PTRSIZE, rax ; cur->next = next->next;
+  LOAD_NODE_RESERVED rcx + PTRSIZE, rbx ; next->next = cur;
+  LOAD_NODE_RESERVED rel prev, rcx ;prev = next;
+  jmp .inner_loop
 
 .done:
+  pop r14
+  pop rbx
   pop r13
   pop r12
   ret

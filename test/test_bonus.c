@@ -1,7 +1,22 @@
 #include "../include/libasm_bonus.h"
+#include <string.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+char **copy_arr(char *arr[]){
+  int idx = 0;
+  char **ptr = NULL;
+  while (arr[idx] != NULL) idx++;
+  if (idx <= 0) return (NULL);
+  ptr = (char **)calloc(idx + 1, sizeof(char *));
+  if (ptr == NULL) return (NULL);
+  for (int i = 0; i < idx; i++) {
+    ptr[i] = strdup(arr[i]);
+    if (ptr[i] == NULL) return (NULL);
+  }
+  return (ptr);
+}
 
 int main(void){
 {
@@ -29,26 +44,38 @@ int main(void){
 }
 printf("\n------------------------------------------------------------------------\n");
 {
-  t_list *temp = calloc(sizeof(t_list), 1);
-  int arr[100];
-  const int count = 100;
-  const int min = 0;
-  const int max = 10;              // 원하는 범위
-  srand((unsigned)time(NULL));      // 시드 1회 설정
+  char *words[] = {"a", "a", "a", "a","e","f",NULL};
+  char **ptr = copy_arr(words);
+  t_list *head = NULL;
+  int cnt = 0;
 
-  for (int i = 0; i < count; ++i) {
-      arr[i] = (rand() % (max - min + 1)) + min;
-      ft_list_push_front(&temp, &arr[i]);
-      printf("%d ", arr[i]);
+  for (int i = 0; ptr[i]; i++){
+    printf("cnt is %d\n", cnt);
+    ft_list_push_front(&head, ptr[i]);
+    cnt++;
   }
-  printf("\n------------------------------------------------------------------------\n");
 
-  ft_list_sort(&temp, ft_strcmp);
-  while (temp->next) {
-    printf("%d ", *(int *)temp->data);
-    temp = temp->next;
+  printf("origine is\n");
+  cnt = 0;
+  for (t_list *node = head; node; node = node->next){
+    printf("cnt is %d %s\n", cnt,(char *)node->data);
+    cnt++;
   }
-  printf("\n");
+
+  ft_list_sort(&head, ft_strcmp);
+
+  printf("sort is\n");
+  cnt = 0;
+  for (t_list *node = head; node; node = node->next){
+    printf("cnt is %d %s\n", cnt,(char *)node->data);
+    cnt++;
+  }
+
+  while (head) {
+      t_list *next = head->next;
+      free(head);
+      head = next;
+  }
 }
 return (0);
 }
