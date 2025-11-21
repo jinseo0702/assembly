@@ -28,8 +28,10 @@ src/ft_read.s \
 src/ft_strdup.s
 
 ASM_BONUS_SRC = src/ft_list_push_front.s \
+src/ft_atoi_base.s \
 src/ft_list_size.s \
-src/ft_list_sort.s
+src/ft_list_sort.s \
+src/ft_list_remove_if.s
 
 C_SRC = test/test.c
 
@@ -74,13 +76,13 @@ $(DEBUG_TEST) : $(C_OBJ) $(DEBUG) $(HEADER)
 $(BONUS) : $(ASM_BONUS_OBJS)
 	$(AR) $@ $^
 
-$(TEST_BONUS) : $(C_BONUS_OBJ) $(NAME) $(BONUS) $(HEADER_BONUS)
+$(TEST_BONUS) : $(C_BONUS_OBJ) $(BONUS) $(NAME) $(HEADER_BONUS)
 	$(CC) $(CFLAG) $^ -o $(TEST_BONUS)
 
 $(DEBUG_BONUS) : $(ASM_BONUS_OBJS_DEBUG)
 	$(AR) $@ $(ASM_BONUS_OBJS_DEBUG)
 
-$(DEBUG_TEST_BONUS) : $(C_BONUS_OBJ) $(DEBUG) $(DEBUG_BONUS) $(HEADER_BONUS)
+$(DEBUG_TEST_BONUS) : $(C_BONUS_OBJ) $(DEBUG_BONUS) $(DEBUG) $(HEADER_BONUS)
 	$(CC) $(CFLAG_DEBUG) $^ -o $(DEBUG_TEST_BONUS)
 
 %.debug.o : %.s
