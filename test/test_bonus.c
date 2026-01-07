@@ -20,6 +20,7 @@ char **copy_arr(char *arr[]){
 
 void free_fct(void *ptr){
   free(ptr);
+  ptr = NULL;
 }
 
 int main(void){
@@ -110,7 +111,9 @@ printf("\n----------------------------------------------------------------------
     head = next;
   }
   for (int i  = 0; ptr[i] != NULL; i++) {
-    free(ptr[i]);
+    if (!ft_strcmp(arr[i], ptr[i])) {
+      free(ptr[i]);
+    }
   }
   free(ptr);
 }

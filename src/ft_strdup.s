@@ -27,7 +27,9 @@ ft_strdup:
   call ft_strlen
   inc rax
   mov rdi, rax
+  push r9
   call malloc wrt ..plt
+  pop r9
   cmp rax, 0
   jz .errcontrol
   mov rdi, rax

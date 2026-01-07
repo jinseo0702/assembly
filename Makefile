@@ -27,11 +27,11 @@ src/ft_write.s \
 src/ft_read.s \
 src/ft_strdup.s
 
-ASM_BONUS_SRC = src/ft_list_push_front.s \
-src/ft_atoi_base.s \
-src/ft_list_size.s \
-src/ft_list_sort.s \
-src/ft_list_remove_if.s
+ASM_BONUS_SRC = src/ft_list_push_front_bonus.s \
+src/ft_atoi_base_bonus.s \
+src/ft_list_size_bonus.s \
+src/ft_list_sort_bonus.s \
+src/ft_list_remove_if_bonus.s
 
 C_SRC = test/test.c
 
